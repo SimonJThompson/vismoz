@@ -2,7 +2,7 @@
 		
 	/* Load any required files */
 
-	require("metrics.php");
+	require("vismozmetrics.php");
 
 	class vismoz
 	{
