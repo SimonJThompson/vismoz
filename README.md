@@ -4,7 +4,7 @@ What is vismoz?
 vismoz is a PHP class to help make the process of creating link visualisations with data from the Moz API a little easier.
 
 Originally, Moz provided a link visualisation tool which returned percentage values which was particularly good for doing
-competitor analysis over key link metrics. Since this was removed, making these link visualisations was not so easy. This 
+competitor analysis over key link metrics in spider / radar charts. Since this was removed, making these link visualisations was not so easy. This 
 class fetches defined link metrics from the Moz API and converts them to percentage values based on an "ideal" value.
 
 About the "ideal values"
