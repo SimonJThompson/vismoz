@@ -28,7 +28,7 @@ Eventually, vismoz will support multiple competitor domains to be given and then
 A Quick Demo
 ======
 
-The following demo will show you a comparison between raw Moz API data and the output from VisMoz.
+The following demo will show you a comparison between raw Moz API data and the output from vismoz.
 
 ```php
 require("class.vismoz.php");
