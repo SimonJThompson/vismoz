@@ -34,9 +34,9 @@ The following demo will show you a comparison between raw Moz API data and the o
 require("class.vismoz.php");
 
 $vismoz		=	new vismoz("your member ID","your access secret");
-$RAW_DATA	=	$vismoz->SEND_API_REQUEST("http://mysite.com","68719632416",true);
+$raw_data	=	$vismoz->send_api_request("http://mysite.com","68719632416",true);
 echo "<h1>Raw Data From The Moz API</h1>";
-var_dump($RAW_DATA);
-$NICE_DATA	=	$vismoz->NICIFY_METRICS($RAW_DATA,$METRICS);
+var_dump($raw_data);
+$nice_data	=	$vismoz->nicify_metrics($raw_data,$METRICS);
 echo "<h1>Output From Vismoz</h1>";
-var_dump($NICE_DATA);
+var_dump($nice_data);
