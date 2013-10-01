@@ -116,25 +116,30 @@
 
 				foreach(array_keys($competitorMetrics[$competitors[0]]) as $metric)
 				{
-					if(!(@$METRICS[$metric]["ideal_value"]>0))
+					if($METRICS[$metric]["is_raw"]==false)
 					{
-						$values = NULL;
-						foreach($competitors as $competitor)
+						$computedMetrics[$metric]["name"]	=	$METRICS[$metric]["name"];
+						$computedMetrics[$metric]["is_raw"]	=	$METRICS[$metric]["is_raw"];
+						if(!($METRICS[$metric]["ideal_value"]>0))
 						{
-							$values[]	=	$competitorMetrics[$competitor][$metric];
+							$values = NULL;
+							foreach($competitors as $competitor)
+							{
+								$values[]	=	$competitorMetrics[$competitor][$metric];
+							}
+							$metric_max	=	max($values);
+							$computedMetrics[$metric]["ideal_value"]	=	self::calculate_ideal($metric_max);
+						}else{
+							$computedMetrics[$metric]["ideal_value"]	=	$METRICS[$metric]["ideal_value"];
 						}
-						$metric_max	=	max($values);
-						$computedMetrics[$metric]["ideal_value"]	=	self::calculate_ideal($metric_max);
-					}else{
-						$computedMetrics[$metric]["ideal_value"]	=	$METRICS[$metric]["ideal_value"];
 					}
 				}
-
+				
 				$niceCompetitorMetrics;
 
 				foreach($competitors as $competitor)
 				{
-					$niceCompetitorMetrics[$competitor]		=	self::nicify_metrics($competitorMetrics[$competitor],$computedMetrics,$axis_values=false);
+					$niceCompetitorMetrics[$competitor]		=	self::nicify_metrics($competitorMetrics[$competitor],$computedMetrics,$axis_values);
 				}
 
 			return $niceCompetitorMetrics;
