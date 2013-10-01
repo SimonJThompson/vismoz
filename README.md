@@ -28,15 +28,19 @@ Eventually, vismoz will support multiple competitor domains to be given and then
 A Quick Demo
 ======
 
-The following demo will show you a comparison between raw Moz API data and the output from vismoz.
+The following demo should get you on track.
 
 ```php
-require("class.vismoz.php");
+<?php
 
-$vismoz		=	new vismoz("your member ID","your access secret");
-$raw_data	=	$vismoz->send_api_request("http://mysite.com","68719632416",true);
-echo "<h1>Raw Data From The Moz API</h1>";
-var_dump($raw_data);
-$nice_data	=	$vismoz->nicify_metrics($raw_data,$METRICS);
-echo "<h1>Output From Vismoz</h1>";
-var_dump($nice_data);
+	require("class.vismoz.php");
+
+	$vismoz		=	new vismoz("your member ID","your access secret");
+
+	echo "<h1>Single Domain Metrics</h1>";
+	var_dump($vismoz->nice_metrics("http://example.com","68719632416",true));
+
+	echo "<h1>Multiple Domain Metrics</h1>";
+	var_dump($vismoz->nice_competitor_metrics(array("http://example.com","http://example2.com"),"68719632416",true));
+	
+?>
