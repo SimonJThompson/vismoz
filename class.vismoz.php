@@ -18,11 +18,11 @@
 		function __construct($moz_access_id, $moz_access_secret)
 		{
 			self::$moz_id			=	$moz_access_id;
-			self::$cURL_options 	=	array( CURLOPT_RETURNTRANSFER => true );
+			self::$cURL_options 		=	array( CURLOPT_RETURNTRANSFER => true );
 			self::$req_expires		=	time() + 300;
 			self::$req_sign			=	$moz_access_id."\n".self::$req_expires;
 			self::$req_bin_sign		=	hash_hmac("sha1",self::$req_sign, $moz_access_secret, true);
-			self::$req_safe_sign	=	urlencode(base64_encode(self::$req_bin_sign));
+			self::$req_safe_sign		=	urlencode(base64_encode(self::$req_bin_sign));
 		}
 
 		/* 
@@ -33,10 +33,15 @@
 		{
 			$req_url	= "http://lsapi.seomoz.com/linkscape/url-metrics/".urlencode($q_target_url)."?Cols=".$q_columns."&AccessID=".self::$moz_id."&Expires=".self::$req_expires."&Signature=".self::$req_safe_sign;
 			$cURL_obj	= curl_init($req_url);
+			
 			curl_setopt_array($cURL_obj, self::$cURL_options);
+			
 			$api_response	=	curl_exec($cURL_obj);
+			
 			curl_close($cURL_obj);
+			
 			if($auto_decode){$api_response	=	json_decode($api_response,true);}
+			
 			return $api_response;
 		}
 
