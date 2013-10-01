@@ -7,74 +7,78 @@
 	class vismoz
 	{
 
-		public static $MOZ_ID;
-		public static $MOZ_SECRET;
+		public static $moz_id;
 
-		public static $CURL_OPTIONS;
-		public static $REQ_EXPIRES;
-		public static $REQ_SIGN;
-		public static $REQ_BIN_SIGN;
-		public static $REQ_SAFE_SIGN;
+		public static $cURL_options;
+		public static $req_expires;
+		public static $req_sign;
+		public static $req_bin_sign;
+		public static $req_safe_sign;
 
-		function __construct($MOZ_ACCESS_ID, $MOZ_ACCESS_SECRET)
+		function __construct($moz_access_id, $moz_access_secret)
 		{
-			self::$MOZ_ID			=	$MOZ_ACCESS_ID;
-			self::$CURL_OPTIONS 	=	array( CURLOPT_RETURNTRANSFER => true );
-			self::$REQ_EXPIRES		=	time() + 300;
-			self::$REQ_SIGN			=	$MOZ_ACCESS_ID."\n".self::$REQ_EXPIRES;
-			self::$REQ_BIN_SIGN		=	hash_hmac("sha1",self::$REQ_SIGN, $MOZ_ACCESS_SECRET, true);
-			self::$REQ_SAFE_SIGN	=	urlencode(base64_encode(self::$REQ_BIN_SIGN));
+			self::$moz_id			=	$moz_access_id;
+			self::$cURL_options 	=	array( CURLOPT_RETURNTRANSFER => true );
+			self::$req_expires		=	time() + 300;
+			self::$req_sign			=	$moz_access_id."\n".self::$req_expires;
+			self::$req_bin_sign		=	hash_hmac("sha1",self::$req_sign, $moz_access_secret, true);
+			self::$req_safe_sign	=	urlencode(base64_encode(self::$req_bin_sign));
 		}
 
 		/* 
 			This function sends  a request to the Moz API to ask for the link metrics.
 		*/
 
-		function SEND_API_REQUEST($Q_TARGET_URL,$Q_COLUMNS,$AUTO_DECODE = false)
+		function send_api_request($q_target_url,$q_columns,$auto_decode = false)
 		{
-			$REQ_URL	= "http://lsapi.seomoz.com/linkscape/url-metrics/".urlencode($Q_TARGET_URL)."?Cols=".$Q_COLUMNS."&AccessID=".self::$MOZ_ID."&Expires=".self::$REQ_EXPIRES."&Signature=".self::$REQ_SAFE_SIGN;
-			$CURL_OBJ	= curl_init($REQ_URL);
-			curl_setopt_array($CURL_OBJ, self::$CURL_OPTIONS);
-			$API_RESPONSE	=	curl_exec($CURL_OBJ);
-			curl_close($CURL_OBJ);
-			if($AUTO_DECODE){$API_RESPONSE	=	json_decode($API_RESPONSE,true);}
-			return $API_RESPONSE;
+			$req_url	= "http://lsapi.seomoz.com/linkscape/url-metrics/".urlencode($q_target_url)."?Cols=".$q_columns."&AccessID=".self::$moz_id."&Expires=".self::$req_expires."&Signature=".self::$req_safe_sign;
+			$cURL_obj	= curl_init($req_url);
+			curl_setopt_array($cURL_obj, self::$cURL_options);
+			$api_response	=	curl_exec($cURL_obj);
+			curl_close($cURL_obj);
+			if($auto_decode){$api_response	=	json_decode($api_response,true);}
+			return $api_response;
 		}
 
 		/*
 			This function turns the metrics in to percentages for use in radar charts etc.
 		 */
 
-		function NICIFY_METRICS($RAW_DATA,$METRIC_LIST,$AXIS_VALUES=false)
+		function nicify_metrics($raw_data,$metric_list,$axis_values=false)
 		{
-			$NICE_DATA;
-			foreach(array_keys($RAW_DATA) as $D)
+			$nice_data;
+			foreach(array_keys($raw_data) as $d)
 			{
-					if(array_key_exists($D,$METRIC_LIST))
+					if(array_key_exists($d,$metric_list))
 					{
 
-						if($METRIC_LIST[$D]["ideal_value"]>0){
-							$NICE_VALUE		=	round(($RAW_DATA[$D] / $METRIC_LIST[$D]["ideal_value"]) * 100,1);
+						if($metric_list[$d]["ideal_value"]>0){
+
+							$nice_value		=	round(($raw_data[$d] / $metric_list[$d]["ideal_value"]) * 100,1);
+
 						}else{
-							$COMPUTED_IDEAL	=	str_pad("1", strlen($RAW_DATA[$D])+1, '0', STR_PAD_RIGHT);
-							$COMPUTED_IDEAL_TOLERANCE	=	$COMPUTED_IDEAL-str_pad("5", strlen($RAW_DATA[$D]), '0', STR_PAD_RIGHT);
-							if($RAW_DATA[$D]<$COMPUTED_IDEAL_TOLERANCE)
+
+							$computed_ideal				=	str_pad("1", strlen($raw_data[$d])+1, '0', STR_PAD_RIGHT);
+							$computed_ideal_tolerance	=	$computed_ideal-str_pad("5", strlen($raw_data[$d]), '0', STR_PAD_RIGHT);
+
+							if($raw_data[$d]<$computed_ideal_tolerance)
 							{
-								$COMPUTED_IDEAL=$COMPUTED_IDEAL_TOLERANCE;
+								$computed_ideal=$computed_ideal_tolerance;
 							}
-							$NICE_VALUE			=	round(($RAW_DATA[$D] / $COMPUTED_IDEAL) * 100,1);
+							
+							$nice_value			=	round(($raw_data[$d] / $computed_ideal) * 100,1);
 						}
 
-						if($AXIS_VALUES)
+						if($axis_values)
 						{
-							$NICE_DATA[$D]	=	array($METRIC_LIST[$D]["name"],$NICE_VALUE);
+							$nice_data[$d]	=	array($metric_list[$d]["name"],$nice_value);
 						}else{
-							$NICE_DATA[$D]	=	$NICE_VALUE;
+							$nice_data[$d]	=	$nice_value;
 						}
 						
 					}
 			}
-			return $NICE_DATA;
+			return $nice_data;
 		}
 
 	}
